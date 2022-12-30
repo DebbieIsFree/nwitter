@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 import "firebase/compat/firestore";
 
 import { initializeApp } from 'firebase/app';
@@ -27,7 +27,5 @@ export const authService = getAuth();
 // version 8
 // export const auth = fbase.auth();
 
-// firebase 전체 export (provider is in firebase)
-export const firebaseInstance = firebase;
 // export const dbservice = firebase.firestore();
-export const dbservice = getFirestore();
+export const dbservice = getFirestore(firebaseApp);
