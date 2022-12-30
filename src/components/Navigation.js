@@ -1,17 +1,18 @@
 import { useEffect } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Home from "routes/Home";
 import Profile from "routes/Profile";
 
-const Navigation = () => {
+const Navigation = ({ userObj }) => {
     return (
         <nav>
             <ul>
                 <li>
-                    <Link to="/" component={Home}>Home</Link>
+                    <Link to="/">Home</Link>
+                    {/* Link안에 component={Home}하면 <Home/> 렌더링 함 */}
                 </li>
                 <li>
-                    <Link to="/profile" component={Profile}>Profile</Link>
+                    <Link to="/profile">Profile</Link>
                 </li>
             </ul>
         </nav>

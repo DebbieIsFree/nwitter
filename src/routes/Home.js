@@ -5,7 +5,6 @@ import { collection } from "firebase/firestore";
 import { authService } from "fbase";
 
 const Home = ({ userObj }) => {
-    console.log(userObj);
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
     const [error, setError] = useState("");
@@ -38,6 +37,7 @@ const Home = ({ userObj }) => {
         }
     };
 
+    // onSnapshot 실시간 db
     const getNweets = async () => {
         const userRef = collection(dbservice, "nweets");
 
@@ -45,6 +45,9 @@ const Home = ({ userObj }) => {
             snap.forEach((doc) => {
                 //console.log(doc.id);
                 //console.log(doc.data());
+                const newArray = { id: doc.id, data: doc.data() };
+                //setNweets(newArray);
+                console.log(newArray);
             });
         });
     };
