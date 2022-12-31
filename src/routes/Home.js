@@ -7,7 +7,7 @@ import Nweet from "components/Nweet";
 const Home = ({ userObj }) => {
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
-    const [error, setError] = useState("");
+    const [attachment, setAttachment] = useState("");
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -33,11 +33,27 @@ const Home = ({ userObj }) => {
             } = event;
             setNweet(value);
         } catch (error) {
-            setError(error.message);
+            console.log(error);
         }
     };
 
-    // onSnapshot 실시간 db
+    const onFileChange = (event) => {
+        const {
+            target: { files },
+        } = event;
+        const theFile = files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(theFile);  // 시점 관리 필요
+        reader.onloadend = (finishedEvent) => {
+            const {
+                currentTarget: { result },
+            } = finishedEvent;
+            setAttachment(result);
+        };
+    };
+
+    const onClearAttachment = () => setAttachment("");
+
     // const getNweets = async () => {
     //     const userRef = collection(dbservice, "nweets");
     //     getDocs(userRef).then((snap) => {
@@ -51,6 +67,7 @@ const Home = ({ userObj }) => {
         // setNweets();
         // getNweets();
 
+        // onSnapshot 실시간 db
         const dbRef = collection(dbservice, 'nweets');
         onSnapshot(dbRef, docSnap => {
             let data = [];
@@ -77,7 +94,14 @@ const Home = ({ userObj }) => {
                     placeholder="What's on your mind?"
                     maxLength={120}
                 />
-                <input type="submit" value="Send" />
+                <input onChange={onFileChange} type="file" accept="image/*" />
+                {attachment && (
+                    <div>
+                        <img src={attachment} width="50px" height="50px" />
+                        <button onClick={onClearAttachment}>Clear</button>
+                    </div>
+                )}
+                <input type="submit" value="Send Nweet" />
             </form>
             <div>
                 {nweets.map((nweet) => (
