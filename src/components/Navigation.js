@@ -9,7 +9,8 @@ const Navigation = ({ userObj }) => {
             <ul>
                 <li>
                     <Link to="/">Home</Link>
-                    {/* Link안에 component={Home}하면 <Home/> 렌더링 함 */}
+                    {/* Link안에 component={Home}하면
+                    화면에 바로 <Home/> 렌더링 됨  */}
                 </li>
                 <li>
                     <Link to="/profile">Profile</Link>

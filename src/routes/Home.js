@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { dbservice } from "fbase";
-import { setDoc, doc, getDocs, addDoc } from "firebase/firestore";
+import { setDoc, doc, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { collection } from "firebase/firestore";
-import { authService } from "fbase";
+import Nweet from "components/Nweet";
 
 const Home = ({ userObj }) => {
     const [nweet, setNweet] = useState("");
@@ -25,7 +25,7 @@ const Home = ({ userObj }) => {
             })
     };
 
-    const onChange = (event) => {
+    const onChange = async (event) => {
         event.preventDefault();
         try {
             const {
@@ -38,23 +38,34 @@ const Home = ({ userObj }) => {
     };
 
     // onSnapshot 실시간 db
-    const getNweets = async () => {
-        const userRef = collection(dbservice, "nweets");
-
-        getDocs(userRef).then((snap) => {
-            snap.forEach((doc) => {
-                //console.log(doc.id);
-                //console.log(doc.data());
-                const newArray = { id: doc.id, data: doc.data() };
-                //setNweets(newArray);
-                console.log(newArray);
-            });
-        });
-    };
+    // const getNweets = async () => {
+    //     const userRef = collection(dbservice, "nweets");
+    //     getDocs(userRef).then((snap) => {
+    //         snap.forEach((doc) => {
+    //             setNweets({ id: doc.id, ...doc.data() });
+    //         });
+    //     });
+    // }
 
     useEffect(() => {
-        getNweets();
-    }, []);
+        // setNweets();
+        // getNweets();
+
+        const dbRef = collection(dbservice, 'nweets');
+        onSnapshot(dbRef, docSnap => {
+            let data = [];
+            docSnap.forEach(doc => {
+                // console.log("Current data: ", doc.data());
+                // console.log("doc Id", doc.id);
+                data.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+                setNweets(data);
+            })
+        });
+    });
+
 
     return (
         <div>
@@ -68,10 +79,23 @@ const Home = ({ userObj }) => {
                 />
                 <input type="submit" value="Send" />
             </form>
+            <div>
+                {nweets.map((nweet) => (
+                    < Nweet
+                        key={nweet.id}
+                        nweetObj={nweet}
+                        isOwner={nweet.creatorId === userObj.uid}
+                    />
+                ))}
+            </div>
+            {/* {<Nweet
+                key={nweet.id}
+                nweetObj={nweet}
+                isOwner={nweet.creatorId === userObj.uid}
+            />} */}
         </div>
     );
 };
-
 
 export default Home;
 
