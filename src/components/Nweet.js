@@ -1,5 +1,5 @@
 import { dbservice } from "fbase";
-import { doc } from "firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 
 const Nweet = ({ nweetObj, isOwner }) => {
 
@@ -9,8 +9,16 @@ const Nweet = ({ nweetObj, isOwner }) => {
         if (ok) {
             // console.log("Obj Result: ", nweetObj);
             // firebase v9 : onSnapshot은 async-await 사용 불가
-            const data = doc(dbservice, 'nweets/%{nweetObj.id}');
-            console.log("data : ", data);
+
+            // const data = doc(dbservice, 'nweets/%{nweetObj.id}');
+            // console.log("data : ", data);
+            deleteDoc(doc(dbservice, "nweets", nweetObj.id))
+                .then(() => {
+                    console.log("Entire Document has been deleted");
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
         }
     }
 
