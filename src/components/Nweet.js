@@ -36,13 +36,9 @@ const Nweet = ({ nweetObj, isOwner }) => {
 
     const onSubmit = async (event) => {
         event.preventDefault();
-        const docRef = doc(dbservice, 'nweets/${nweetObj.id}');
-        const data = {
-            text: newNweet,
-            creatorId: nweetObj.creatorId,
-            createdAt: nweetObj.createdAt
-        };
-        setDoc(docRef, data)
+        const docRef = doc(dbservice, "nweets", nweetObj.id);
+
+        setDoc(docRef, { text: newNweet }, { merge: true })
             .then(() => {
                 console.log("The value of nweet is updated!");
             })
