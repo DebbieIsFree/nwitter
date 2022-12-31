@@ -16,7 +16,6 @@ const Nweet = ({ nweetObj, isOwner }) => {
 
     return (
         <div>
-            {/* prop을 단일 text (nweet)를 넘겨준거라서 text로 접근할 필요 x  */}
             <h4>{nweetObj.text}</h4>
             {/*  하위 컴포넌트에서 상위 컴포넌트로부터 넘겨받은 데이터 result를 
             사용할 때는 props.result의 형태로 사용해야 한다. */}
