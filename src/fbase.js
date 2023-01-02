@@ -2,9 +2,8 @@ import firebase from "firebase/compat/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import "firebase/compat/firestore";
-
 import { initializeApp } from 'firebase/app';
-
+import { getStorage, ref } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,15 +16,12 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-//const firebaseApp = firebase.initializeApp(firebaseConfig);
-
 const firebaseApp = initializeApp(firebaseConfig);
-
 
 // version 9
 export const authService = getAuth();
-// version 8
-// export const auth = fbase.auth();
 
-// export const dbservice = firebase.firestore();
 export const dbservice = getFirestore(firebaseApp);
+
+// firebase storage -> 사진, 동영상 ..
+export const storageService = getStorage(firebaseApp);

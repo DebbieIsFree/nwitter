@@ -1,28 +1,42 @@
-import { useEffect, useState } from "react";
-import { dbservice } from "fbase";
+import { useEffect, useState, useRef } from "react";
+import { dbservice, storageService } from "fbase";
 import { setDoc, doc, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import Nweet from "components/Nweet";
+import { v4 as uuid4 } from "uuid";
+import { ref, uploadBytes, uploadString, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const Home = ({ userObj }) => {
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
     const [attachment, setAttachment] = useState("");
 
+    // const onSubmit = async (event) => {
+    //     event.preventDefault();
+    //     const data = {
+    //         text: nweet,
+    //         createdAt: Date.now(),
+    //         creatorId: userObj.uid
+    //     };
+    //     await addDoc(collection(dbservice, "nweets"), data)
+    //         .then(docRef => {
+    //             console.log("Document has been added successfully");
+    //         })
+    //         .catch(error => {
+    //             console.log(error);
+    //         })
+    // };
+
     const onSubmit = async (event) => {
         event.preventDefault();
-        const data = {
-            text: nweet,
-            createdAt: Date.now(),
-            creatorId: userObj.uid
+
+        const metaData = {
+            contentType: 'image/*'
         };
-        await addDoc(collection(dbservice, "nweets"), data)
-            .then(docRef => {
-                console.log("Document has been added successfully");
-            })
-            .catch(error => {
-                console.log(error);
-            })
+
+        const storageRef = ref(storageService, `${userObj.uid}/${uuid4()}`);
+        const response = uploadString(storageRef, attachment, 'data_url');
+        console.log("response : ", response);
     };
 
     const onChange = async (event) => {
@@ -33,26 +47,27 @@ const Home = ({ userObj }) => {
             } = event;
             setNweet(value);
         } catch (error) {
-            console.log(error);
+            console.log("Not Changed");
         }
     };
 
     const onFileChange = (event) => {
-        const {
-            target: { files },
-        } = event;
-        const theFile = files[0];
+        event.preventDefault();
+
+        const file = event.target.files[0];
         const reader = new FileReader();
-        reader.readAsDataURL(theFile);  // 시점 관리 필요
+        reader.readAsDataURL(file);
         reader.onloadend = (finishedEvent) => {
-            const {
-                currentTarget: { result },
-            } = finishedEvent;
-            setAttachment(result);
+            setAttachment(finishedEvent.currentTarget.result);
+            console.log("finishedEvent.currentTarget.resultt : ", finishedEvent.currentTarget.result);
+            console.log("Attachment : ", attachment);
         };
+        reader.readAsDataURL(file);
     };
 
-    const onClearAttachment = () => setAttachment("");
+    const onClearAttachment = () => {
+        setAttachment("");
+    }
 
     // const getNweets = async () => {
     //     const userRef = collection(dbservice, "nweets");
