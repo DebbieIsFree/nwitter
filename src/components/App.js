@@ -14,6 +14,7 @@ function App() {
       displayName: user.displayName,
       uid: user.uid,
       updateProfile: (args) => user.updateProfile(args),
+      // updateProfile: (args) => updateProfile(authService.currentUser, { args })
     });
   };
 
@@ -25,11 +26,12 @@ function App() {
         setUserObj({
           uid: user.uid,
           displayName: user.displayName,
-          updateProfile: (args) => updateProfile(authService.currentUser, { args })
+          updateProfile: (args) => user.updateProfile(args),
+          // updateProfile: (args) => updateProfile(authService.currentUser, { args })
         });
       }
       else {
-        setUserObj(null);
+        setUserObj(false);
       }
       setInit(true);
     }, []);

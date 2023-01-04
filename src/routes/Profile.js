@@ -41,7 +41,6 @@ const Profile = ({ userObj, refreshUser }) => {
                 console.log("Profile update error");
             });
         }
-
         refreshUser();
     };
 
