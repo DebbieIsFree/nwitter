@@ -1,4 +1,3 @@
-// import { async } from "@firebase/util";
 import { authService } from "fbase";
 import {
     createUserWithEmailAndPassword,
