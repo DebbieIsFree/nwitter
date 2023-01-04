@@ -5,17 +5,27 @@ import { updateProfile } from "firebase/auth";
 
 function App() {
   const [init, setInit] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userObj, setUserObj] = useState(null);
+
+  const refreshUser = () => {
+    const user = authService.currentUser;
+    setUserObj({
+      displayName: user.displayName,
+      uid: user.uid,
+      updateProfile: (args) => user.updateProfile(args),
+    });
+  };
 
   // user 정보 새로고침
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
       if (user) {
-        setIsLoggedIn(user);
+        // setIsLoggedIn(user);
         setUserObj({
           uid: user.uid,
           displayName: user.displayName,
+          updateProfile: (args) => updateProfile(authService.currentUser, { args })
         });
       }
       else {
@@ -29,7 +39,8 @@ function App() {
     <>
       {init ? (
         <AppRouter
-          isLoggedIn={isLoggedIn}
+          refreshUser={refreshUser}
+          isLoggedIn={Boolean(userObj)}
           userObj={userObj || ""}   // uncontrolled input element
         />
       ) : "initializing..."}

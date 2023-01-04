@@ -1,5 +1,5 @@
 import { dbservice, storageService } from "fbase";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import { useState } from "react";
 
@@ -35,7 +35,7 @@ const Nweet = ({ nweetObj, isOwner }) => {
         event.preventDefault();
         const docRef = doc(dbservice, "nweets3", nweetObj.id);
 
-        setDoc(docRef, { text: newNweet }, { merge: true })
+        updateDoc(docRef, { text: newNweet })
             .then(() => {
                 console.log("The value of nweet is updated!");
             })
