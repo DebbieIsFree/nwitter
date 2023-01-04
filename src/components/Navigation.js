@@ -13,7 +13,7 @@ const Navigation = ({ userObj }) => {
                     화면에 바로 <Home/> 렌더링 됨  */}
                 </li>
                 <li>
-                    <Link to="/profile">Profile</Link>
+                    <Link to="/profile">{userObj.displayName}의 Profile</Link>
                 </li>
             </ul>
         </nav>

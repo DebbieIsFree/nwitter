@@ -81,18 +81,18 @@ const Home = ({ userObj }) => {
         setAttachment("");
     }
 
-    const getNweets = async (event) => {
-        // event.preventDefault();
-        const ref = collection(dbservice, "nweets3");
-        const data = await getDocs(ref);
-        const newData = data.docs.map(doc => ({
-            ...doc.data()
-        }));
-        setNweets(newData);
-    };
+    // const getNweets = async (event) => {
+    //     // event.preventDefault();
+    //     const ref = collection(dbservice, "nweets3");
+    //     const data = await getDocs(ref);
+    //     const newData = data.docs.map(doc => ({
+    //         ...doc.data()
+    //     }));
+    //     setNweets(newData);
+    // };
 
     useEffect(() => {
-        getNweets();
+        // getNweets();
 
         // onSnapshot 실시간 db
         const dbRef = collection(dbservice, 'nweets3');
