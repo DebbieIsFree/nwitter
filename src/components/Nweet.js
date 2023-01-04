@@ -1,5 +1,6 @@
-import { dbservice } from "fbase";
+import { dbservice, storageService } from "fbase";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { deleteObject, ref } from "firebase/storage";
 import { useState } from "react";
 
 const Nweet = ({ nweetObj, isOwner }) => {
@@ -12,17 +13,13 @@ const Nweet = ({ nweetObj, isOwner }) => {
         const ok = window.confirm("삭제하시겠습니까?");
 
         if (ok) {
-            // console.log("Obj Result: ", nweetObj);
             // firebase v9 : onSnapshot은 async-await 사용 불가
-
-            // const data = doc(dbservice, 'nweets/%{nweetObj.id}');
-            // console.log("data : ", data);
-            deleteDoc(doc(dbservice, "nweets", nweetObj.id))
+            deleteDoc(doc(dbservice, "nweets3", `${nweetObj.id}`))
                 .then(() => {
-                    console.log("Entire Document has been deleted");
+                    console.log("Document has been deleted");
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.log("error");
                 })
         }
     };
@@ -36,15 +33,16 @@ const Nweet = ({ nweetObj, isOwner }) => {
 
     const onSubmit = async (event) => {
         event.preventDefault();
-        const docRef = doc(dbservice, "nweets", nweetObj.id);
+        const docRef = doc(dbservice, "nweets3", nweetObj.id);
 
         setDoc(docRef, { text: newNweet }, { merge: true })
             .then(() => {
                 console.log("The value of nweet is updated!");
             })
             .catch((error) => {
-                console.log(error);
+                console.log("error");
             })
+        setEditing(false);
     };
 
     return (
@@ -60,6 +58,8 @@ const Nweet = ({ nweetObj, isOwner }) => {
             ) : (
                 <>
                     <h4>{nweetObj.text}</h4>
+                    {nweetObj.attachmentUrl && <img src={nweetObj.attachmentUrl}
+                        width={"50px"} height={"50px"} />}
                     {/* 하위 컴포넌트에서 상위 컴포넌트로부터 넘겨받은 데이터 result를
                     사용할 때는 props.result의 형태로 사용해야 한다.  */}
                     {isOwner && (

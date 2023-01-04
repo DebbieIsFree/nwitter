@@ -4,39 +4,65 @@ import { setDoc, doc, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import Nweet from "components/Nweet";
 import { v4 as uuid4 } from "uuid";
-import { ref, uploadBytes, uploadString, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
 const Home = ({ userObj }) => {
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
     const [attachment, setAttachment] = useState("");
 
-    // const onSubmit = async (event) => {
-    //     event.preventDefault();
-    //     const data = {
-    //         text: nweet,
-    //         createdAt: Date.now(),
-    //         creatorId: userObj.uid
-    //     };
-    //     await addDoc(collection(dbservice, "nweets"), data)
-    //         .then(docRef => {
-    //             console.log("Document has been added successfully");
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //         })
-    // };
-
-    const onSubmit = async (event) => {
+    const onFileSubmit = (event) => {
         event.preventDefault();
+        // if (nweet === "") {
+        //     return;
+        // }
+        let attachmentUrl = "";
+        if (attachment !== "") {
+            console.log("${userObj.uid} : ", userObj.uid);
 
-        const metaData = {
-            contentType: 'image/*'
+            // Data URL string
+            const storageRef = ref(storageService, `${userObj.uid}/${uuid4()}}`);
+            // attachmentUrl = getDownloadURL(ref(storageService, `gs://bucket/${userObj.uid}/${uuid4()}.png`));
+            uploadString(storageRef, attachment, 'data_url')
+                .then(() => {
+                    // attachmentUrl = getDownloadURL(ref(storageService, `${userObj.uid}/${uuid4()}.png`))
+                    getDownloadURL(ref(storageService, storageRef))
+                        .then(() => {
+                            console.log('Uploaded a data_url string!');
+                            console.log("attachmentUrl : ", attachmentUrl);
+                            const nweetObj = {
+                                text: nweet,
+                                createdAt: Date.now(),
+                                creatorId: userObj.uid,
+                                attachmentUrl,
+                            };
+                            addDoc(collection(dbservice, "nweets3"), nweetObj)
+                                .then(docRef => {
+                                    console.log("Document has been added successfully");
+                                })
+                                .catch(error => {
+                                    console.log("File Submit error");
+                                })
+                            setNweet("");   // 초기화
+                            setAttachment("");
+                        })
+                })
+                .catch((error) => {
+                    console.log("failed");
+                })
+        }
+    };
+
+
+    const onFileChange = (event) => {
+        event.preventDefault();
+        // 파일 1개 전송
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = (finishedEvent) => {
+            setAttachment(finishedEvent.currentTarget.result);
         };
-
-        const storageRef = ref(storageService, `${userObj.uid}/${uuid4()}`);
-        const response = uploadString(storageRef, attachment, 'data_url');
-        console.log("response : ", response);
+        reader.readAsDataURL(file);
     };
 
     const onChange = async (event) => {
@@ -51,57 +77,42 @@ const Home = ({ userObj }) => {
         }
     };
 
-    const onFileChange = (event) => {
-        event.preventDefault();
-
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = (finishedEvent) => {
-            setAttachment(finishedEvent.currentTarget.result);
-            console.log("finishedEvent.currentTarget.resultt : ", finishedEvent.currentTarget.result);
-            console.log("Attachment : ", attachment);
-        };
-        reader.readAsDataURL(file);
-    };
-
     const onClearAttachment = () => {
         setAttachment("");
     }
 
-    // const getNweets = async () => {
-    //     const userRef = collection(dbservice, "nweets");
-    //     getDocs(userRef).then((snap) => {
-    //         snap.forEach((doc) => {
-    //             setNweets({ id: doc.id, ...doc.data() });
-    //         });
-    //     });
-    // }
+    const getNweets = async (event) => {
+        // event.preventDefault();
+        const ref = collection(dbservice, "nweets3");
+        const data = await getDocs(ref);
+        const newData = data.docs.map(doc => ({
+            ...doc.data()
+        }));
+        setNweets(newData);
+    };
 
     useEffect(() => {
-        // setNweets();
-        // getNweets();
+        getNweets();
 
         // onSnapshot 실시간 db
-        const dbRef = collection(dbservice, 'nweets');
-        onSnapshot(dbRef, docSnap => {
-            let data = [];
-            docSnap.forEach(doc => {
-                // console.log("Current data: ", doc.data());
-                // console.log("doc Id", doc.id);
+        const dbRef = collection(dbservice, 'nweets3');
+        let data = [];
+        onSnapshot(dbRef, docsSnap => {
+            docsSnap.forEach((doc) => {
                 data.push({
                     id: doc.id,
                     ...doc.data()
                 });
+                console.log("doc.data() : ", doc.data());
                 setNweets(data);
             })
         });
-    });
+    }, []);
 
 
     return (
         <div>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onFileSubmit}>
                 <input
                     onChange={onChange}
                     value={nweet}

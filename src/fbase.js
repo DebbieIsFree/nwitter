@@ -5,6 +5,7 @@ import "firebase/compat/firestore";
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref } from "firebase/storage";
 
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -24,4 +25,5 @@ export const authService = getAuth();
 export const dbservice = getFirestore(firebaseApp);
 
 // firebase storage -> 사진, 동영상 ..
+// export const storageService = getStorage(firebaseApp, "gs://nwitter2-5ee01.appspot.com");
 export const storageService = getStorage(firebaseApp);
