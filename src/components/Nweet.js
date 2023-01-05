@@ -1,8 +1,9 @@
-import { dbservice } from "fbase";
+import { dbservice, storageService } from "fbase";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import { deleteObject, ref } from "firebase/storage";
 
 const Nweet = ({ nweetObj, isOwner }) => {
     const [editing, setEditing] = useState(false);  // toggle
@@ -22,6 +23,12 @@ const Nweet = ({ nweetObj, isOwner }) => {
                 .catch((error) => {
                     console.log("error");
                 })
+            if (nweetObj.attachmentUrl !== "") {
+                console.log("nweetObj.attachmentUrl : ", nweetObj.attachmentUrl);
+                deleteObject(ref(storageService, nweetObj.attachmentUrl))
+                    .then(() => { console.log("이미지 삭제 성공"); })
+                    .catch((error) => { console.log("이미지 삭제 실패"); })
+            }
         }
     };
 

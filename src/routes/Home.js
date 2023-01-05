@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { dbservice } from "fbase";
-import { onSnapshot } from "firebase/firestore";
+import { getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import Nweet from "components/Nweet";
 import NweetFactory from "components/NweetFactory";
@@ -23,8 +23,10 @@ const Home = ({ userObj }) => {
 
         // onSnapshot 실시간 db
         const dbRef = collection(dbservice, 'nweets3');
+        // 최신 트윗 상단 노출
+        const qr = query(dbRef, orderBy("createdAt", "desc"));   // asc 오름차순
         let data = [];
-        onSnapshot(dbRef, docsSnap => {
+        onSnapshot(qr, docsSnap => {
             docsSnap.forEach((doc) => {
                 data.push({
                     id: doc.id,

@@ -17,10 +17,8 @@ const NweetFactory = ({ userObj }) => {
         }
         let attachmentUrl = "";
         if (attachment !== "") {
-            console.log("${userObj.uid} : ", userObj.uid);
-
             // Data URL string
-            const storageRef = ref(storageService, `${userObj.uid}/${uuid4()}}`);
+            const storageRef = ref(storageService, `${userObj.uid}/${uuid4()}`);
             // attachmentUrl = getDownloadURL(ref(storageService, `gs://bucket/${userObj.uid}/${uuid4()}.png`));
             uploadString(storageRef, attachment, 'data_url')
                 .then(() => {
@@ -60,7 +58,11 @@ const NweetFactory = ({ userObj }) => {
         reader.onloadend = (finishedEvent) => {
             setAttachment(finishedEvent.currentTarget.result);
         };
-        reader.readAsDataURL(file);
+        // reader.readAsDataURL(file);
+        // 사진 선택 취소 버그 수정
+        if (Boolean(file)) {
+            reader.readAsDataURL(file);
+        }
     };
 
     const onChange = async (event) => {
